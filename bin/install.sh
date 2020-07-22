@@ -7,9 +7,8 @@ green=`tput setaf 2`
 nocolor=`tput sgr0`
 
 # Functions
-#ok() { echo -e '\e[32m'$1'\e[m'; } # Green
 install_nginx() {
-    apt install nginx
+    apt-get install -y nginx
 }
 
 # Must be root
@@ -21,6 +20,8 @@ fi
 
 if ! which nginx > /dev/null 2>&1; then
     echo "${red}Nginx not installed ...${nocolor}"
+    echo "${green}Installing Nginx ...${nocolor}"
+    install_nginx()
 else 
     echo "${green}Nginx present!${nocolor}"
 fi
