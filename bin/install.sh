@@ -21,7 +21,7 @@ fi
 if ! which nginx > /dev/null 2>&1; then
     echo "${red}Nginx not installed ...${nocolor}"
     echo "${green}Installing Nginx ...${nocolor}"
-    install_nginx()
+    install_nginx
 else 
     echo "${green}Nginx present!${nocolor}"
 fi
