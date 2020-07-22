@@ -32,6 +32,10 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 nocolor=`tput sgr0`
 
+if [ ! $1 ]; then
+    echo "${red}You must have a domain argument${nocolor}"
+fi
+[ $# != "1" ] && die "Usage: $(basename $0) domainName"
 
 if [ -e $NGINX_AVAILABLE_VHOSTS/$1 ]; then
     echo "${red}Domain present! not installing!!!${nocolor}"
