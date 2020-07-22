@@ -34,8 +34,9 @@ nocolor=`tput sgr0`
 
 if [ ! $1 ]; then
     echo "${red}You must have a domain argument${nocolor}"
+    echo "Usage: $(basename $0) domainName"
+    exit
 fi
-[ $# != "1" ] && die "Usage: $(basename $0) domainName"
 
 if [ -e $NGINX_AVAILABLE_VHOSTS/$1 ]; then
     echo "${red}Domain present! not installing!!!${nocolor}"
