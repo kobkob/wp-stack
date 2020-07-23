@@ -39,39 +39,52 @@ install_nginx() {
 # Create nginx config file
 create_nginx_config() {
     cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
-# www to non-www
+# Upstream to abstract backend connection(s) for php
+upstream php {
+        server unix:/tmp/php-cgi.socket;
+        server 127.0.0.1:9000;
+}
+
 server {
-    listen 80;
-    # If user goes to www direct them to non www
-    server_name *.$domain;
-    return 301 $NGINX_SCHEME://$1$NGINX_REQUEST_URI;
+        ## Your website name goes here.
+        server_name $1;
+        ## Your only path reference.
+        root $WEB_DIR/$1;
+        ## This should be in your http block and if it is, it's not needed here.
+        index index.php;
+
+        location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+        }
+
+        location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+        }
+
+        location / {
+                # This is cool because no php is touched for static content.
+                # include the "?$args" part so non-default permalinks doesn't break when using query string
+                try_files $uri $uri/ /index.php?$args;
+        }
+
+        location ~ \.php$ {
+                #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                include fastcgi_params;
+                fastcgi_intercept_errors on;
+                fastcgi_pass php;
+                #The following parameter can be also included in fastcgi_params file
+                fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+                expires max;
+                log_not_found off;
+        }
 }
-server {
-    # Just the server name
-    listen 80;
-    server_name $1
-    root        $WEB_DIR/$1/;
-   index index.php index.html index.htm;
-    # Logs
-    access_log $WEB_DIR/logs/$1/access.log;
-    error_log  $WEB_DIR/logs/$1/error.log;
-location / {
- proxy_read_timeout 150;
- try_files $uri $uri/ /index.php?$args;
-}
-    location ~ \.php$ { 
-include snippets/fastcgi-php.conf; 
-fastcgi_pass unix:/var/run/php/php7.1-fpm.sock; # You might want to change the PHP version to 7.3
-fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; 
-include fastcgi_params;
-fastcgi_read_timeout 600; 
-proxy_connect_timeout 600; 
-proxy_send_timeout 600; 
-proxy_read_timeout 600;
-send_timeout 600;
-client_max_body_size 50M; 
-}
-  }
+
 EOF
 }
 
@@ -87,7 +100,6 @@ if [ ! $1 ]; then
     echo "Usage: $(basename $0) domainName"
     exit
 fi
-
 
 # Test and install nginx if not installed
 if ! which nginx > /dev/null 2>&1; then
@@ -123,3 +135,15 @@ else
     ln -s $NGINX_AVAILABLE_VHOSTS/$1 $NGINX_ENABLED_VHOSTS/$1
     echo "${green}Done. Installed $1 in nginx${nocolor}"
 fi
+
+# Define databases
+#CREATE DATABASEANAME
+dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
+echo "successfully created database name"
+# CREATE DATABASE USERNAME
+
+MAINDB="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
+echo "successfully created database username"
+# CREATE DATABASE USERNAME PASSWORD
+PASSWDDB="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
+echo "successfully created database username password"
