@@ -4,7 +4,31 @@ It installs wordpress in a Debian box under Nginx.
 
 Todo: work in CentOS/RH
 
+== Required software
+
+Run as root to install.
+
+Update your system and Install git:
+
+[subs="quotes"]
+-----
+# apt update -y
+# apt upgrade -y
+# apt install -y git
+-----
+
+Clone this repository:
+
+[subs="quotes"]
+-----
+# git clone https://gitlab.com/kobkob/wp-stack.git
+# cd wp-stack
+-----
+
+== Install Wordpress
+
 Use:
+
 [subs="quotes"]
 -----
 # ./bin/install.sh

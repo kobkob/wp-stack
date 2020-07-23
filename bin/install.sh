@@ -114,11 +114,8 @@ install_php() {
     echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php$phpVersion.list
     apt update
     apt -y install php$phpVersion
+    apt install php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
     echo "${green}Done. Installed PHP ...${nocolor}"   
-}
-
-uninstall_php() {
-    echo "${green}Removing PHP ...${nocolor}" 
 }
 
 #################################################################
@@ -136,14 +133,6 @@ if [ ! $1 ]; then
     exit
 fi
 
-# Check and Install PHP
-if [ $(checkPHPVersion $phpVersion) -eq 0 ]; then
-    echo "${green}PHP Version OK...${nocolor}"
-else
-    echo "${red}PHP Version NOT OK...${nocolor}"
-    install_php
-fi
-
 # Test and install nginx if not installed
 if ! which nginx > /dev/null 2>&1; then
     echo "${red}Nginx not installed ...${nocolor}"
@@ -152,6 +141,16 @@ if ! which nginx > /dev/null 2>&1; then
 else 
     echo "${green}Nginx present!${nocolor}"
 fi
+
+# Check and Install PHP
+# Apache will not launch as nginx is here
+if [ $(checkPHPVersion $phpVersion) -eq 0 ]; then
+    echo "${green}PHP Version OK...${nocolor}"
+else
+    echo "${red}PHP Version NOT OK...${nocolor}"
+    install_php
+fi
+
 
 if [ -e $NGINX_AVAILABLE_VHOSTS/$1 ]; then
     echo "${red}Domain present! not installing!!!${nocolor}"

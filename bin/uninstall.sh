@@ -24,6 +24,14 @@ remove_nginx_config() {
    rm -f /etc/nginx/sites-available/$1
 }
 
+remove_php() {
+    echo "${green}Removing PHP ...${nocolor}" 
+    apt purge php$phpVersion
+    apt purge php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
+    echo "${green}PHP Removed ...${nocolor}" 
+}
+
+
 # Must be root
 if [ $(id -u) -ne 0 ]
   then echo "${red}You must be root to install Wordpress.${nocolor}"
