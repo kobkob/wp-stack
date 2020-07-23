@@ -106,7 +106,15 @@ checkPHPVersion() {
 }
 
 install_php() {
-    echo "${green}Installing PHP ...${nocolor}"    
+    echo "${green}Installing PHP ...${nocolor}"   
+    apt update
+    apt upgrade -y
+    apt -y install lsb-release apt-transport-https ca-certificates 
+    wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php$phpVersion.list
+    apt update
+    apt -y install php$phpVersion
+    echo "${green}Done. Installed PHP ...${nocolor}"   
 }
 
 uninstall_php() {
