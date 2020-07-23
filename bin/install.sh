@@ -108,7 +108,7 @@ else
     # Creating {public,log} directories
     mkdir -p $WEB_DIR/logs/$1
 
-    wget -o $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
+    wget -O $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
     #cd $WEB_DIR
     tar -zxf $WEB_DIR/wordpress.tgz
     sleep 2
