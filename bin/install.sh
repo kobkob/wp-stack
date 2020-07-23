@@ -109,8 +109,8 @@ else
     mkdir -p $WEB_DIR/logs/$1
 
     wget -O $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
-    #cd $WEB_DIR
-    tar -zxf $WEB_DIR/wordpress.tgz
+    cd $WEB_DIR
+    tar -zxf wordpress.tgz
     sleep 2
     cp -r $WEB_DIR/wordpress $WEB_DIR/$1
     echo "${green}Succesfully copied contents to web dir${nocolor}"
