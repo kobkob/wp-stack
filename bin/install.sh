@@ -113,11 +113,13 @@ else
     tar -zxf wordpress.tgz
     sleep 2
     cp -r $WEB_DIR/wordpress $WEB_DIR/$1
+    rm $WEB_DIR/wordpress.tgz
+    rm -Rf $WEB_DIR/wordpress
     echo "${green}Succesfully copied contents to web dir${nocolor}"
 
     # Changing permissions
     chown -R $USER:$WEB_USER $WEB_DIR/$1
-    // Enable site by creating symbolic link
+    #Enable site by creating symbolic link
     ln -s $NGINX_AVAILABLE_VHOSTS/$1 $NGINX_ENABLED_VHOSTS/$1
     echo "${green}Done. Installed $1 in nginx${nocolor}"
 fi
