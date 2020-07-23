@@ -49,7 +49,7 @@ server {
 server {
     # Just the server name
     listen 80;
-    server_name $1.$domain;
+    server_name $1
     root        $WEB_DIR/$1/;
    index index.php index.html index.htm;
     # Logs
@@ -104,4 +104,20 @@ if [ -e $NGINX_AVAILABLE_VHOSTS/$1 ]; then
 else 
     echo "${green}Installing domain $1 ${nocolor}"
     create_nginx_config $1
+
+    # Creating {public,log} directories
+    mkdir -p $WEB_DIR/logs/$1
+
+    wget -o $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
+    cd $WEB_DIR
+    tar -zxf wordpress.tgz
+    sleep 2
+    cp -r $WEB_DIR/wordpress $WEB_DIR/$1
+    echo "${green}Succesfully copied contents to web dir${nocolor}"
+
+    # Changing permissions
+    chown -R $USER:$WEB_USER $WEB_DIR/$1
+    // Enable site by creating symbolic link
+    ln -s $NGINX_AVAILABLE_VHOSTS/$1 $NGINX_ENABLED_VHOSTS/$1
+    echo "${green}Done. Installed $1 in nginx${nocolor}"
 fi
