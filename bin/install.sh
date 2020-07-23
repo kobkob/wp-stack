@@ -8,14 +8,8 @@ NGINX_ENABLED_VHOSTS='/etc/nginx/sites-enabled'
 WEB_DIR='/var/www'
 WEB_USER='www-data'
 USER='www-data'
-zone='America\/New_York'		# Time zone that will be auto selected when running setup make sure to inlcude the \ I recommend to leave this as is and change it during the setup.
-					# you can find list of zones supported by vtiger at: https://discussions.vtiger.com/discussion/190812/time-zone-setting-list-is-empty
-currency='USA, Dollars'				# Currency that will be auto selected when running setup Ex. Jamaica, Dollars | Isle of Man, Pounds | Iran, Rials | USA, Dollars | Netherlands Antilles, Guilders etc. If unsure, leave it as is, and change during setup.
-date='dd-mm-yyyy'			# Date format that will be auto selected when running setup
-date2='"dd-mm-yyyy"'			# Date format with  make sure to fill this one is as well must be the same as date
-vtigeradmin='password'			# Password for the default admin user
-rootpasswd='MYSQLROOTPASS'		# root password mysql used for making database
-domain='example.com'
+domain=$1
+phpVersion=7.3
 
 # Do NOT edit the following variables!!!
 NGINX_SCHEME='$scheme'
@@ -89,6 +83,38 @@ server {
 EOF
 }
 
+# Function to check if the PHP version is valid
+checkPHPVersion() {
+
+    # The current PHP Version of the machine
+    PHPVersion=$(php -v|grep --only-matching --perl-regexp "5\.\\d+\.\\d+");
+    # Truncate the string abit so we can do a binary comparison
+    currentVersion=${PHPVersion::0-2};
+    # The version to validate against
+    minimumRequiredVersion=$1;
+    # If the version match
+    if [ $(echo " $currentVersion >= $minimumRequiredVersion" | bc) -eq 1 ]; then
+        # Notify that the versions are matching
+        echo "${green}PHP Version is valid ...${nocolor}";
+    else
+        # Else notify that the version are not matching
+        echo "${red}PHP Version NOT valid for ${currentVersion} ...${nocolor}";
+        # Return fail
+        return 1
+    fi
+
+}
+
+install_php() {
+    echo "${green}Installing PHP ...${nocolor}"    
+}
+
+uninstall_php() {
+    echo "${green}Removing PHP ...${nocolor}" 
+}
+
+#################################################################
+
 # Must be root
 if [ $(id -u) -ne 0 ]
   then echo "${red}You must be root to install Wordpress.${nocolor}"
@@ -100,6 +126,14 @@ if [ ! $1 ]; then
     echo "${red}You must have a domain argument${nocolor}"
     echo "Usage: $(basename $0) domainName"
     exit
+fi
+
+# Check and Install PHP
+if [ $(checkPHPVersion $phpVersion) -eq 0 ]; then
+    echo "${green}PHP Version OK...${nocolor}"
+else
+    echo "${red}PHP Version NOT OK...${nocolor}"
+    install_php
 fi
 
 # Test and install nginx if not installed
@@ -136,6 +170,8 @@ else
     ln -s $NGINX_AVAILABLE_VHOSTS/$1 $NGINX_ENABLED_VHOSTS/$1
     echo "${green}Done. Installed $1 in nginx${nocolor}"
 fi
+
+# Install Mysql
 
 # Define databases
 #CREATE DATABASEANAME
