@@ -52,7 +52,8 @@ server {
         root $WEB_DIR/$1;
         ## This should be in your http block and if it is, it's not needed here.
         index index.php;
-
+        access_log $WEB_DIR/logs/$1/access.log;
+        error_log  $WEB_DIR/logs/$1/error.log;
         location = /favicon.ico {
                 log_not_found off;
                 access_log off;
