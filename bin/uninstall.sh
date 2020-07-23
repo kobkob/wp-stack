@@ -50,7 +50,7 @@ else
 fi
 
 # Uninstall nginx
-if [ $2 == "purge" ]; then
+if [ "$2" == "purge" ]; then
     if ! which nginx > /dev/null 2>&1; then
         echo "${red}Nginx not installed, ok ...${nocolor}"
     else 
