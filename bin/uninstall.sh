@@ -68,4 +68,15 @@ if [ "$2" == "purge" ]; then
     fi
 fi
 
+# Uninstall php
+if [ "$2" == "purge" ]; then
+    if ! which php > /dev/null 2>&1; then
+        echo "${red}PHP not installed, ok ...${nocolor}"
+    else 
+        echo "${green}PHP present!${nocolor}"
+        remove_php
+    fi
+fi
+
+
 echo "${green}Done. Removed $1${nocolor}"
