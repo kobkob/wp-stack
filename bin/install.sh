@@ -103,41 +103,5 @@ if [ -e $NGINX_AVAILABLE_VHOSTS/$1 ]; then
     exit
 else 
     echo "${green}Installing domain $1 ${nocolor}"
-    #create_nginx_config
-    cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
-# www to non-www
-server {
-    listen 80;
-    # If user goes to www direct them to non www
-    server_name *.$domain;
-    return 301 $NGINX_SCHEME://$1$NGINX_REQUEST_URI;
-}
-server {
-    # Just the server name
-    listen 80;
-    server_name $1.$domain;
-    root        $WEB_DIR/$1/;
-   index index.php index.html index.htm;
-    # Logs
-    access_log $WEB_DIR/logs/$1/access.log;
-    error_log  $WEB_DIR/logs/$1/error.log;
-location / {
- proxy_read_timeout 150;
- try_files $uri $uri/ /index.php?$args;
-}
-    location ~ \.php$ { 
-include snippets/fastcgi-php.conf; 
-fastcgi_pass unix:/var/run/php/php7.1-fpm.sock; # You might want to change the PHP version to 7.3
-fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; 
-include fastcgi_params;
-fastcgi_read_timeout 600; 
-proxy_connect_timeout 600; 
-proxy_send_timeout 600; 
-proxy_read_timeout 600;
-send_timeout 600;
-client_max_body_size 50M; 
-}
-  }
-EOF
-
+    create_nginx_config $1
 fi
