@@ -110,7 +110,7 @@ else
 
     wget -o $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
     #cd $WEB_DIR
-    tar -zxf $WEBDIR/wordpress.tgz
+    tar -zxf $WEB_DIR/wordpress.tgz
     sleep 2
     cp -r $WEB_DIR/wordpress $WEB_DIR/$1
     echo "${green}Succesfully copied contents to web dir${nocolor}"
