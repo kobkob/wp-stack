@@ -7,6 +7,7 @@ NGINX_AVAILABLE_VHOSTS='/etc/nginx/sites-available'
 NGINX_ENABLED_VHOSTS='/etc/nginx/sites-enabled'
 WEB_DIR='/var/www'
 WEB_USER='www-data'
+phpVersion=7.3
 
 red=`tput setaf 1`
 green=`tput setaf 2`
