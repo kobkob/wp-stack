@@ -5,7 +5,7 @@
 # Variables, change them accoriding to your needs
 NGINX_AVAILABLE_VHOSTS='/etc/nginx/sites-available'
 NGINX_ENABLED_VHOSTS='/etc/nginx/sites-enabled'
-WEB_DIR='/var/www/wordpress'
+WEB_DIR='/var/www'
 WEB_USER='www-data'
 USER='www-data'
 zone='America\/New_York'		# Time zone that will be auto selected when running setup make sure to inlcude the \ I recommend to leave this as is and change it during the setup.
@@ -109,8 +109,8 @@ else
     mkdir -p $WEB_DIR/logs/$1
 
     wget -o $WEB_DIR/wordpress.tgz https://wordpress.org/latest.tar.gz
-    cd $WEB_DIR
-    tar -zxf wordpress.tgz
+    #cd $WEB_DIR
+    tar -zxf $WEBDIR/wordpress.tgz
     sleep 2
     cp -r $WEB_DIR/wordpress $WEB_DIR/$1
     echo "${green}Succesfully copied contents to web dir${nocolor}"
