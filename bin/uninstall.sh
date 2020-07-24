@@ -31,7 +31,12 @@ remove_php() {
     apt -y purge php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
     echo "${green}PHP Removed ...${nocolor}" 
 }
-
+remove_mysql() {
+    echo "${green}Removing MySQL ...${nocolor}" 
+    apt -y purge mariadb-server
+    apt -y purge mariadb-client
+    echo "${green}MySQL Removed ...${nocolor}" 
+}
 
 # Must be root
 if [ $(id -u) -ne 0 ]
@@ -77,6 +82,17 @@ if [ "$2" == "purge" ]; then
         remove_php
     fi
 fi
+
+# Uninstall mysql
+if [ "$2" == "purge" ]; then
+    if ! which mysql > /dev/null 2>&1; then
+        echo "${red}MySQL not installed, ok ...${nocolor}"
+    else 
+        echo "${green}MySQL present!${nocolor}"
+        remove_mysql
+    fi
+fi
+
 
 
 echo "${green}Done. Removed $1${nocolor}"
