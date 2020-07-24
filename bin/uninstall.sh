@@ -16,7 +16,7 @@ nocolor=`tput sgr0`
 # Functions
 
 remove_nginx() {
-   apt purge nginx
+   apt -y purge nginx
    echo "${green}Nginx is purged!${nocolor}"
 }
 
@@ -27,8 +27,8 @@ remove_nginx_config() {
 
 remove_php() {
     echo "${green}Removing PHP ...${nocolor}" 
-    apt purge php$phpVersion
-    apt purge php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
+    apt -y purge php$phpVersion
+    apt -y purge php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
     echo "${green}PHP Removed ...${nocolor}" 
 }
 
