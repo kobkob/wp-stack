@@ -35,7 +35,7 @@ create_nginx_config() {
     cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
 # Upstream to abstract backend connection(s) for php
 upstream php {
-        server unix:/tmp/php-cgi.socket;
+        server unix:/var/run/php/php-fpm.sock;
         server 127.0.0.1:9000;
 }
 
@@ -83,38 +83,27 @@ server {
 EOF
 }
 
-# Function to check if the PHP version is valid
 checkPHPVersion() {
-
-    # The current PHP Version of the machine
-    PHPVersion=$(php -v|grep --only-matching --perl-regexp "5\.\\d+\.\\d+");
-    # Truncate the string abit so we can do a binary comparison
-    currentVersion=${PHPVersion::0-2};
-    # The version to validate against
-    minimumRequiredVersion=$1;
-    # If the version match
-    if [ $(echo " $currentVersion >= $minimumRequiredVersion" | bc) -eq 1 ]; then
-        # Notify that the versions are matching
-        echo "${green}PHP Version is valid ...${nocolor}";
+    PHPVersion=$(php -v | perl -e '@a=<>;print substr "$a[0]", 4, 3');
+    if [ $(echo "$PHPVersion >= $1" | bc ) -eq 1 ]; then
+        echo "${green}PHP Version OK ...${nocolor}";
+        return 0
     else
-        # Else notify that the version are not matching
-        echo "${red}PHP Version NOT valid for ${currentVersion} ...${nocolor}";
-        # Return fail
+        echo "${red}PHP Version NOT OK: ${PHPVersion} ...${nocolor}";
         return 1
     fi
 
 }
-
 install_php() {
     echo "${green}Installing PHP ...${nocolor}"   
-    apt update
-    apt upgrade -y
+    apt -y update
+    apt -y upgrade
     apt -y install lsb-release apt-transport-https ca-certificates 
     wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
     echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php$phpVersion.list
-    apt update
+    apt -y update
     apt -y install php$phpVersion
-    apt install php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
+    apt -y install php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
     echo "${green}Done. Installed PHP ...${nocolor}"   
 }
 
