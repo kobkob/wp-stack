@@ -118,8 +118,8 @@ install_mysql() {
     echo "${green}Installing mySQL ...${nocolor}"   
     apt -y update
     apt -y upgrade
-    apt -y install mysql-server
-    apt -y install mysql-client
+    apt -y install mariadb-server
+    apt -y install mariadb-client
     echo "${green}Done. Installed mysql ...${nocolor}"   
 }
 
