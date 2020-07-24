@@ -10,6 +10,7 @@ WEB_USER='www-data'
 USER='www-data'
 domain=$1
 phpVersion=7.3
+mysqlVersion=10.1
 
 # Do NOT edit the following variables!!!
 NGINX_SCHEME='$scheme'
@@ -26,11 +27,9 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 nocolor=`tput sgr0`
 
-# Functions
 install_nginx() {
     apt-get install -y nginx
 }
-# Create nginx config file
 create_nginx_config() {
     cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
 # Upstream to abstract backend connection(s) for php
@@ -82,7 +81,6 @@ server {
 
 EOF
 }
-
 checkPHPVersion() {
     PHPVersion=$(php -v | perl -e '@a=<>;print substr "$a[0]", 4, 3');
     if [ $(echo "$PHPVersion >= $1" | bc ) -eq 1 ]; then
@@ -105,6 +103,24 @@ install_php() {
     apt -y install php$phpVersion
     apt -y install php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
     echo "${green}Done. Installed PHP ...${nocolor}"   
+}
+checkMysqlVersion() {
+    mySQLVersion=$(mysql --version | perl -e '@a=<>;print substr "$a[0]", 11, 5');
+    if [ $(echo "$mySQLVersion >= $1" | bc ) -eq 1 ]; then
+        echo "${green}mySQL Version OK ...${nocolor}";
+        return 0
+    else
+        echo "${red}mySQL Version NOT OK: ${mySQLVersion} ...${nocolor}";
+        return 1
+    fi
+}
+install_mysql() {
+    echo "${green}Installing mySQL ...${nocolor}"   
+    apt -y update
+    apt -y upgrade
+    apt -y install mysql-server
+    apt -y install mysql-client
+    echo "${green}Done. Installed mysql ...${nocolor}"   
 }
 
 #################################################################
@@ -168,6 +184,12 @@ else
 fi
 
 # Install Mysql
+if [ $(checkMysqlVersion $mysqlVersion) -eq 0 ]; then
+    echo "${green}mysql version OK...${nocolor}"
+else
+    echo "${red}Mysql version NOT OK...${nocolor}"
+    install_mysql
+fi
 
 # Define databases
 #CREATE DATABASEANAME
@@ -180,3 +202,18 @@ echo "successfully created database username"
 # CREATE DATABASE USERNAME PASSWORD
 PASSWDDB="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
 echo "successfully created database username password"
+
+echo "Creating new MySQL database..."
+mysql -uroot -p${rootpasswd} -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
+echo "Database successfully created!"
+echo "alterdatabase to use utf8_general_ci"
+mysql -uroot -p${rootpasswd} -e "ALTER DATABASE ${dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+echo "Creating new user..."
+mysql -uroot -p${rootpasswd} -e "CREATE USER ${MAINDB}@localhost IDENTIFIED BY '${PASSWDDB}';"
+echo "User successfully created!"
+echo "Granting ALL privileges on ${dbname} to ${MAINDB}!"
+mysql -uroot -p${rootpasswd} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${MAINDB}'@'localhost' WITH GRANT OPTION;"
+mysql -uroot -p${rootpasswd} -e "FLUSH PRIVILEGES;"
+echo "Sucessfully granted privileges on ${dbname} to ${MAINDB}!"
+
+echo "${green}Done. Installed domain $1 with php, mysql, nginx and wordpress.${nocolor}"
