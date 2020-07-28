@@ -222,13 +222,13 @@ fi
 #CREATE DATABASEANAME
 dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
 #dbname="wordpress"
-echo "successfully created database name"
+echo "Database name: $dbname">>install.log
 # CREATE DATABASE USERNAME
 dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
-echo "successfully created database username"
+echo "Username: $dbuser">>install.log
 # CREATE DATABASE USERNAME PASSWORD
 dbpass="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
-echo "successfully created database username password"
+echo "Password: $dbpass">>install.log
 
 # Configure worpress to use this database
 
@@ -252,7 +252,7 @@ perl -i -pe'
 #create uploads folder and set permissions
 mkdir $WEB_DIR/$1/wp-content/uploads
 chmod 775 $WEB_DIR/$1/wp-content/uploads
-
+echo ${green}
 echo "Creating new MySQL database..."
 mysql -uroot -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 echo "Database successfully created!"
@@ -265,5 +265,5 @@ echo "Granting ALL privileges on ${dbname} to ${dbuser}!"
 mysql -uroot  -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost' WITH GRANT OPTION;"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 echo "Sucessfully granted privileges on ${dbname} to ${dbuser}!"
-
+echo "${nocolor}"
 echo "${green}Done. Installed domain $1 with php, mysql, nginx and wordpress.${nocolor}"
