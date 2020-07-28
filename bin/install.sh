@@ -218,14 +218,14 @@ fi
 #CREATE DATABASEANAME
 dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
 #dbname="wordpress"
-echo "Database name: $dbname">>install.log
+echo "Database name: $dbname" >> install.log
 # CREATE DATABASE USERNAME
 dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
 echo "Use
-name: $dbuser">>install.log
+name: $dbuser" >> install.log
 # CREATE DATABASE USERNAME PASSWORD
 dbpass="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
-echo "Password: $dbpass">>install.log
+echo "Password: $dbpass" >> install.log
 
 # Configure worpress to use this database
 
@@ -258,7 +258,7 @@ echo "alterdatabase to use utf8_general_ci"
 mysql -uroot -e "ALTER DATABASE ${dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;"
 echo "Creating new user..."
 mysql -uroot -e "CREATE USER ${dbuser}@localhost IDENTIFIED BY '${dbpass}';"
-echo "User ${dbuser} with pass ${dbpas} successfully created!"
+echo "User ${dbuser} with pass ${dbpass} successfully created!"
 echo "Granting ALL privileges on ${dbname} to ${dbuser}!"
 mysql -uroot  -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost' WITH GRANT OPTION;"
 mysql -uroot -e "FLUSH PRIVILEGES;"
