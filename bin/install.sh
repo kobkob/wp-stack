@@ -148,6 +148,7 @@ if ! which nginx > /dev/null 2>&1; then
     echo "${red}Nginx not installed ...${nocolor}"
     echo "${green}Installing Nginx ...${nocolor}"
     install_nginx
+    service nginx restart
 else 
     echo "${green}Nginx present!${nocolor}"
 fi
@@ -185,6 +186,7 @@ else
     chown -R $USER:$WEB_USER $WEB_DIR/$1
     #Enable site by creating symbolic link
     ln -s $NGINX_AVAILABLE_VHOSTS/$1 $NGINX_ENABLED_VHOSTS/$1
+    service nginx restart
     echo "${green}Done. Installed $1 in nginx${nocolor}"
 fi
 
@@ -232,7 +234,7 @@ mkdir $WEB_DIR/$1/wp-content/uploads
 chmod 775 $WEB_DIR/$1/wp-content/uploads
 
 echo "Creating new MySQL database..."
-mysql -uroot -p${rootpasswd} -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
+mysql -uroot -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
 echo "Database successfully created!"
 echo "alterdatabase to use utf8_general_ci"
 mysql -uroot -e "ALTER DATABASE ${dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;"
