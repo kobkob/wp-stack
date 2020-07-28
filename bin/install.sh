@@ -36,10 +36,10 @@ install_nginx() {
 create_nginx_config() {
     cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
 # Upstream to abstract backend connection(s) for php
-upstream php {
-        server unix:/var/run/php/php-fpm.sock;
-        server 127.0.0.1:9000;
-}
+# upstream php {
+#        server unix:/var/run/php/php-fpm.sock;
+#        server 127.0.0.1:9000;
+# }
 
 server {
         ## Your website name goes here.
@@ -71,7 +71,8 @@ server {
                 #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
                 include fastcgi_params;
                 fastcgi_intercept_errors on;
-                fastcgi_pass php;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+                #fastcgi_pass php;
                 #The following parameter can be also included in fastcgi_params file
                 fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
         }
@@ -219,8 +220,8 @@ fi
 
 # Define databases
 #CREATE DATABASEANAME
-#dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
-dbname="wordpress"
+dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
+#dbname="wordpress"
 echo "successfully created database name"
 # CREATE DATABASE USERNAME
 dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
