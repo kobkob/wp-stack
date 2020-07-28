@@ -9,8 +9,8 @@ WEB_DIR='/var/www'
 WEB_USER='www-data'
 USER='www-data'
 domain=$1
-phpVersion=7.3
-mysqlVersion=10.1
+phpVersion="7.3"
+mysqlVersion="10.1"
 rootpasswd=""
 
 # Do NOT edit the following variables!!!
