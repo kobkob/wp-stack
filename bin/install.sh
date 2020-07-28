@@ -11,6 +11,7 @@ USER='www-data'
 domain=$1
 phpVersion=7.3
 mysqlVersion=10.1
+rootpasswd=""
 
 # Do NOT edit the following variables!!!
 NGINX_SCHEME='$scheme'
@@ -22,6 +23,7 @@ fastcgi_script_name='$fastcgi_script_name'
 defaultzone='America\/Los_Angeles'
 defaultcurrency='USA, Dollars'
 defaultdate='"mm-dd-yyyy"'
+WP_LOCAL_CONFIG=$WEB_DIR/$1/'config-localhost.php'
 
 red=`tput setaf 1`
 green=`tput setaf 2`
@@ -193,15 +195,28 @@ fi
 
 # Define databases
 #CREATE DATABASEANAME
-dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
+#dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
+dbname="wordpress"
 echo "successfully created database name"
 # CREATE DATABASE USERNAME
-
 MAINDB="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
 echo "successfully created database username"
 # CREATE DATABASE USERNAME PASSWORD
 PASSWDDB="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
 echo "successfully created database username password"
+
+# Configure worpress to use this database
+
+cat > $WP_LOCAL_CONFIG <<EOF
+<?php
+define('DB_NAME', '$dbname');
+define('DB_USER', '$MAINDB');
+define('DB_PASSWORD', '$PASSWDDB');
+define('DB_HOST', 'localhost');
+define('DB_COLLATE', 'utf8_general_ci');
+define('WP_CONTENT_DIR', '/usr/share/wordpress/wp-content');
+?>
+EOF
 
 echo "Creating new MySQL database..."
 mysql -uroot -p${rootpasswd} -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
