@@ -23,7 +23,8 @@ fastcgi_script_name='$fastcgi_script_name'
 defaultzone='America\/Los_Angeles'
 defaultcurrency='USA, Dollars'
 defaultdate='"mm-dd-yyyy"'
-WP_LOCAL_CONFIG=$WEB_DIR/$1/'config-localhost.php'
+WP_LOCAL_CONFIG_SAMPLE=$WEB_DIR/$1/'wp-config-sample.php'
+WP_LOCAL_CONFIG=$WEB_DIR/$1/'wp-config.php'
 
 red=`tput setaf 1`
 green=`tput setaf 2`
