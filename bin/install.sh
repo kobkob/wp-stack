@@ -218,14 +218,15 @@ fi
 #CREATE DATABASEANAME
 dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
 #dbname="wordpress"
+echo "Domain $1" >> install.log
 echo "Database name: $dbname" >> install.log
 # CREATE DATABASE USERNAME
 dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
-echo "Use
-name: $dbuser" >> install.log
+echo "Username: $dbuser" >> install.log
 # CREATE DATABASE USERNAME PASSWORD
 dbpass="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
 echo "Password: $dbpass" >> install.log
+echo "----------------------------" >> install.log
 
 # Configure worpress to use this database
 
