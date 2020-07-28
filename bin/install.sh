@@ -172,7 +172,8 @@ fi
 
 # Check and Install PHP
 # Apache will not launch as nginx is here
-if [ $(checkPHPVersion $phpVersion) -eq 0 ]; then
+checkPHPVersion $phpVersion
+if [ $? -eq 0 ]; then
     echo "${green}PHP Version OK...${nocolor}"
 else
     echo "${red}PHP Version NOT OK...${nocolor}"
@@ -208,7 +209,8 @@ else
 fi
 
 # Install Mysql
-if [ $(checkMysqlVersion $mysqlVersion) -eq 0 ]; then
+checkMysqlVersion $mysqlVersion
+if [ $? -eq 0 ]; then
     echo "${green}mysql version OK...${nocolor}"
 else
     echo "${red}Mysql version NOT OK...${nocolor}"
