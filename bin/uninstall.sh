@@ -93,6 +93,6 @@ if [ "$2" == "purge" ]; then
     fi
 fi
 
-
+apt autoremove
 
 echo "${green}Done. Removed $1${nocolor}"
