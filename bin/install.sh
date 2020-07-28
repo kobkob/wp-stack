@@ -88,10 +88,8 @@ EOF
 checkPHPVersion() {
     PHPVersion=$(php -v | perl -e '@a=<>;print substr "$a[0]", 4, 3');
     if [ $(echo "$PHPVersion >= $1" | bc ) -eq 1 ]; then
-        echo "${green}PHP Version OK ...${nocolor}";
         return 0
     else
-        echo "${red}PHP Version NOT OK: ${PHPVersion} ...${nocolor}";
         return 1
     fi
 
@@ -113,10 +111,8 @@ install_php() {
 checkMysqlVersion() {
     mySQLVersion=$(mysql --version | perl -e '@a=<>;print substr "$a[0]", 11, 5');
     if [ $(echo "$mySQLVersion >= $1" | bc ) -eq 1 ]; then
-        echo "${green}mySQL Version OK ...${nocolor}";
         return 0
     else
-        echo "${red}mySQL Version NOT OK: ${mySQLVersion} ...${nocolor}";
         return 1
     fi
 }
@@ -225,7 +221,8 @@ dbname="$(openssl rand -base64 5 | tr -d "=+/" | cut -c1-25)$2"
 echo "Database name: $dbname">>install.log
 # CREATE DATABASE USERNAME
 dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
-echo "Username: $dbuser">>install.log
+echo "Use
+name: $dbuser">>install.log
 # CREATE DATABASE USERNAME PASSWORD
 dbpass="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
 echo "Password: $dbpass">>install.log
@@ -254,16 +251,16 @@ mkdir $WEB_DIR/$1/wp-content/uploads
 chmod 775 $WEB_DIR/$1/wp-content/uploads
 echo ${green}
 echo "Creating new MySQL database..."
+echo ${nocolor}
 mysql -uroot -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
-echo "Database successfully created!"
+echo "Database ${dbname} successfully created!"
 echo "alterdatabase to use utf8_general_ci"
 mysql -uroot -e "ALTER DATABASE ${dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;"
 echo "Creating new user..."
 mysql -uroot -e "CREATE USER ${dbuser}@localhost IDENTIFIED BY '${dbpass}';"
-echo "User successfully created!"
+echo "User ${dbuser} with pass ${dbpas} successfully created!"
 echo "Granting ALL privileges on ${dbname} to ${dbuser}!"
 mysql -uroot  -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost' WITH GRANT OPTION;"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 echo "Sucessfully granted privileges on ${dbname} to ${dbuser}!"
-echo "${nocolor}"
 echo "${green}Done. Installed domain $1 with php, mysql, nginx and wordpress.${nocolor}"
