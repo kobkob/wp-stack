@@ -104,6 +104,8 @@ install_php() {
     apt -y update
     apt -y install php$phpVersion
     apt -y install php$phpVersion-cli php$phpVersion-fpm php$phpVersion-json php$phpVersion-pdo php$phpVersion-mysql php$phpVersion-zip php$phpVersion-gd  php$phpVersion-mbstring php$phpVersion-curl php$phpVersion-xml php$phpVersion-bcmath php$phpVersion-json
+    # Disable apache
+    systemctl disable apache2.service
     echo "${green}Done. Installed PHP ...${nocolor}"   
 }
 checkMysqlVersion() {
@@ -199,24 +201,34 @@ fi
 dbname="wordpress"
 echo "successfully created database name"
 # CREATE DATABASE USERNAME
-MAINDB="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
+dbuser="$(openssl rand -base64 8 | tr -d "=+/" | cut -c1-25)$2"
 echo "successfully created database username"
 # CREATE DATABASE USERNAME PASSWORD
-PASSWDDB="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
+dbpass="$(openssl rand -base64 29 | tr -d "=+/" | cut -c1-25)"
 echo "successfully created database username password"
 
 # Configure worpress to use this database
 
-cat > $WP_LOCAL_CONFIG <<EOF
-<?php
-define('DB_NAME', '$dbname');
-define('DB_USER', '$MAINDB');
-define('DB_PASSWORD', '$PASSWDDB');
-define('DB_HOST', 'localhost');
-define('DB_COLLATE', 'utf8_general_ci');
-define('WP_CONTENT_DIR', '/usr/share/wordpress/wp-content');
-?>
-EOF
+#create wp config
+cp $WP_LOCAL_CONFIG_SAMPLE $WP_LOCAL_CONFIG 
+#set database details with perl find and replace
+perl -pi -e "s/database_name_here/$dbname/g" $WP_LOCAL_CONFIG 
+perl -pi -e "s/username_here/$dbuser/g" $WP_LOCAL_CONFIG 
+perl -pi -e "s/password_here/$dbpass/g" $WP_LOCAL_CONFIG 
+
+#set WP salts
+perl -i -pe'
+  BEGIN {
+    @chars = ("a" .. "z", "A" .. "Z", 0 .. 9);
+    push @chars, split //, "!@#$%^&*()-_ []{}<>~\`+=,.;:/?|";
+    sub salt { join "", map $chars[ rand @chars ], 1 .. 64 }
+  }
+  s/put your unique phrase here/salt()/ge
+' $WP_LOCAL_CONFIG
+
+#create uploads folder and set permissions
+mkdir $WEB_DIR/$1/wp-content/uploads
+chmod 775 $WEB_DIR/$1/wp-content/uploads
 
 echo "Creating new MySQL database..."
 mysql -uroot -p${rootpasswd} -e "CREATE DATABASE ${dbname} /*\!40100 DEFAULT CHARACTER SET utf8 */;"
@@ -224,11 +236,11 @@ echo "Database successfully created!"
 echo "alterdatabase to use utf8_general_ci"
 mysql -uroot -p${rootpasswd} -e "ALTER DATABASE ${dbname} CHARACTER SET utf8 COLLATE utf8_general_ci;"
 echo "Creating new user..."
-mysql -uroot -p${rootpasswd} -e "CREATE USER ${MAINDB}@localhost IDENTIFIED BY '${PASSWDDB}';"
+mysql -uroot -p${rootpasswd} -e "CREATE USER ${dbuser}@localhost IDENTIFIED BY '${PASSWDDB}';"
 echo "User successfully created!"
-echo "Granting ALL privileges on ${dbname} to ${MAINDB}!"
-mysql -uroot -p${rootpasswd} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${MAINDB}'@'localhost' WITH GRANT OPTION;"
+echo "Granting ALL privileges on ${dbname} to ${dbuser}!"
+mysql -uroot -p${rootpasswd} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost' WITH GRANT OPTION;"
 mysql -uroot -p${rootpasswd} -e "FLUSH PRIVILEGES;"
-echo "Sucessfully granted privileges on ${dbname} to ${MAINDB}!"
+echo "Sucessfully granted privileges on ${dbname} to ${dbuser}!"
 
 echo "${green}Done. Installed domain $1 with php, mysql, nginx and wordpress.${nocolor}"
