@@ -94,5 +94,7 @@ if [ "$2" == "purge" ]; then
 fi
 
 apt autoremove
+service nginx restart
+service mariadb restart
 
 echo "${green}Done. Removed $1${nocolor}"
