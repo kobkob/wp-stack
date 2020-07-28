@@ -127,6 +127,14 @@ install_mysql() {
     apt -y install mariadb-client
     echo "${green}Done. Installed mysql ...${nocolor}"   
 }
+install_bc() {
+    echo "${green}Installing bc ...${nocolor}"   
+    apt -y update
+    apt -y upgrade
+    apt -y install bc
+    echo "${green}Done. Installed bc ...${nocolor}"   
+}
+
 
 #################################################################
 
@@ -142,6 +150,15 @@ if [ ! $1 ]; then
     echo "Usage: $(basename $0) domainName"
     exit
 fi
+# Test and install bc if not installed
+if ! which bc > /dev/null 2>&1; then
+    echo "${red}bc not installed ...${nocolor}"
+    echo "${green}Installing bc ...${nocolor}"
+    install_bc
+else 
+    echo "${green}bc present!${nocolor}"
+fi
+
 
 # Test and install nginx if not installed
 if ! which nginx > /dev/null 2>&1; then
