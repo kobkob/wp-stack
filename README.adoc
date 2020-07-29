@@ -1,5 +1,8 @@
 = Wordpress stack script
 
+image:https://gitlab.com/kobkob/wp-stack/badges/master/pipeline.svg[link="https://gitlab.com/kobkob/wp-stack/-/commits/master",title="pipeline status"]
+image:https://gitlab.com/kobkob/wp-stack/badges/master/coverage.svg[link="https://gitlab.com/kobkob/wp-stack/-/commits/master",title="coverage report"]
+
 It installs wordpress in a Debian box under Nginx. 
 
 Todo: work in CentOS/RH
