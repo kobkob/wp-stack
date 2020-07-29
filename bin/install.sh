@@ -9,7 +9,7 @@ WEB_DIR='/var/www'
 WEB_USER='www-data'
 USER='www-data'
 domain=$1
-phpVersion="7.2"
+phpVersion="7.3"
 mysqlVersion="10.1"
 rootpasswd=""
 
@@ -250,6 +250,8 @@ perl -i -pe'
 #create uploads folder and set permissions
 mkdir $WEB_DIR/$1/wp-content/uploads
 chmod 775 $WEB_DIR/$1/wp-content/uploads
+chown -R $USER:$WEB_USER $WEB_DIR/$1/wp-content/uploads
+
 echo ${green}
 echo "Creating new MySQL database..."
 echo ${nocolor}
