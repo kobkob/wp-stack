@@ -21,3 +21,6 @@ inc/
 /Makefile.old
 /MANIFEST.bak
 /pm_to_blib
+composer.lock
+composer.json
+vendor/
