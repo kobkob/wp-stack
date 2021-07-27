@@ -31,7 +31,7 @@ green=`tput setaf 2`
 nocolor=`tput sgr0`
 
 install_nginx() {
-    apt-get install -y nginx
+    apt-get install -y nginx php-fpm php-pear
 }
 create_nginx_config() {
     cat > $NGINX_AVAILABLE_VHOSTS/$1 <<EOF # Start server block info
